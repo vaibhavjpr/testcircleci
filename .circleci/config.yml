@@ -1,25 +1,39 @@
 version: 2
+
 jobs:
   build:
     docker:
-      - image: circleci/node:7.10
-    working_directory: ~/repo
+      - image: node:latest
+    working_directory: ~/public
     steps:
       - run: echo build step
+      - run: npm install
+      - run: npm audit fix
+      - run: npm install -g gatsby-cli
+      - run: gatsby build
+      - run: curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
+      - persist_to_workspace:
+          root: ~/public
+          paths: .
 
   test:
     docker:
-      - image: circleci/node:7.10
+      - image: alpine:latest
     working_directory: ~/repo
     steps:
-      - run: echo test step
+      - run: grep -q "Gatsby" ./public/index.html
+      - persist_to_workspace:
+          root: ~/public
+          paths: .
 
   deploy:
     docker:
-      - image: circleci/node:7.10
-    working_directory: ~/repo
+      - image: node:latest
+    working_directory: ~/public
     steps:
       - run: echo deploy step
+      - run: npm install --global surge
+      - run: surge --project ./public --domain Lambu.surge.sh
 
 workflows:
   version: 2
@@ -29,13 +43,9 @@ workflows:
       - test:
           requires:
             - build
-      - hold:
-          #type: approval
-          requires:
-            - test
       - deploy:
           requires:
-            - hold
+            - test
           filters:
             branches:
               only:
