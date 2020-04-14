@@ -4,8 +4,8 @@ jobs:
   build:
     docker:
       - image: node:latest
-    working_directory: ~/public
     steps:
+      - checkout
       - run: echo build step
       - run: npm install
       - run: npm audit fix
@@ -19,7 +19,7 @@ jobs:
   test:
     docker:
       - image: alpine:latest
-    working_directory: ~/repo
+    working_directory: ~/public
     steps:
       - run: grep -q "Gatsby" ./public/index.html
       - persist_to_workspace:
