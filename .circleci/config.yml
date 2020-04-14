@@ -3,51 +3,22 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:latest
+      - image: docker:latest
+    environment:
+      - IMAGE_NAME: nginx-v$CIRCLE_BUILD_NUM
     steps:
       - checkout
-      - run: echo build step
-      - run: npm install
-      - run: npm audit fix
-      - run: npm install -g gatsby-cli
-      - run: gatsby new gatsby-site
-      - run: cd gatsby-site
-      - run: gatsby develop 
-      - run: gatsby build
-      - persist_to_workspace:
-          root: ~/public
-          paths: .
-
-  test:
-    docker:
-      - image: alpine:latest
-    working_directory: ~/public
-    steps:
-      - run: grep -q "Gatsby" ./public/index.html
-      - persist_to_workspace:
-          root: ~/public
-          paths: .
-
-  deploy:
-    docker:
-      - image: node:latest
-    working_directory: ~/public
-    steps:
-      - run: echo deploy step
-      - run: npm install --global surge
-      - run: surge --project ./public --domain Lambu.surge.sh
+      - run: echo $HOME
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWD docker.io
+      - run: docker build --pull -t $IMAGE_NAME .
+      - run: docker tag $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME
+      - run: docker push $DOCKER_USER/$IMAGE_NAME
 
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - deploy:
-          requires:
-            - test
+      - build:
           filters:
             branches:
               only:
