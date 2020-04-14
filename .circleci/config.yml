@@ -10,6 +10,8 @@ jobs:
       - run: npm install
       - run: npm audit fix
       - run: npm install -g gatsby-cli
+      - run: gatsby new gatsby-site
+      - run: cd gatsby-site
       - run: gatsby build
       - persist_to_workspace:
           root: ~/public
