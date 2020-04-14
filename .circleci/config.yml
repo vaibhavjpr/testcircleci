@@ -5,12 +5,12 @@ jobs:
     docker:
       - image: docker:latest
     environment:
-      - IMAGE_NAME: nginx-v$CIRCLE_BUILD_NUM
+      - IMAGE_NAME: nginx-v
     steps:
       - checkout
       - run: echo $HOME
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWD docker.io
-      - run: docker build --pull -t $IMAGE_NAME .
+      - run: docker build --pull -t $IMAGE_NAME$CIRCLE_BUILD_NUM .
       - run: docker tag $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME
       - run: docker push $DOCKER_USER/$IMAGE_NAME
 
