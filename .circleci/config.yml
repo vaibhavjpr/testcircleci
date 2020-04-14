@@ -11,9 +11,9 @@ jobs:
       - setup_remote_docker:
           #docker_layer_caching: true
       - run: echo $HOME
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWD docker.io
+      - run: echo "$DOCKER_PASSWD" | docker login --username $DOCKER_USER --password-stdin docker.io
       - run: docker build  -t $IMAGE_NAME$CIRCLE_BUILD_NUM .
-      - run: docker tag $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME
+      - run: docker tag $IMAGE_NAME$CIRCLE_BUILD_NUM $DOCKER_USER/$IMAGE_NAME
       - run: docker push $DOCKER_USER/$IMAGE_NAME
 
 workflows:
