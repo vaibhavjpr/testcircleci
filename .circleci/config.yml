@@ -12,6 +12,7 @@ jobs:
       - run: npm install -g gatsby-cli
       - run: gatsby new gatsby-site
       - run: cd gatsby-site
+      - run: gatsby develop 
       - run: gatsby build
       - persist_to_workspace:
           root: ~/public
