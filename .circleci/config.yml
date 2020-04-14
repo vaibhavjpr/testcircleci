@@ -11,7 +11,6 @@ jobs:
       - run: npm audit fix
       - run: npm install -g gatsby-cli
       - run: gatsby build
-      - run: curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
       - persist_to_workspace:
           root: ~/public
           paths: .
